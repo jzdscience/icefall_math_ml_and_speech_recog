@@ -326,7 +326,7 @@ def get_params() -> AttributeDict:
             "batch_idx_train": 0,
             "log_interval": 1,
             "reset_interval": 200,
-            "valid_interval": 400,  # For the 100h subset, use 800
+            "valid_interval": 800,  # For the 100h subset, use 800
             # parameters for conformer
             "feature_dim": 80,
             "subsampling_factor": 4,

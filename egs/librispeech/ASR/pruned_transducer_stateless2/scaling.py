@@ -704,6 +704,64 @@ class DoubleSwish(torch.nn.Module):
             return DoubleSwishFunction.apply(x)
 
 
+## below are all different activation functions to experiement with
+class Swish(torch.nn.Module):
+    """Construct an Swish object."""
+
+    def forward(self, x: Tensor) -> Tensor:
+        """Return Swich activation function."""
+        return x * torch.sigmoid(x)
+
+
+class ReLU(torch.nn.Module):
+    """Construct an ReLU object."""
+
+    def forward(self, x: Tensor) -> Tensor:
+        """Return ReLU activation function."""
+        return torch.relu(x)
+
+
+class Tanh(torch.nn.Module):
+    """Construct an Tanh object."""
+
+    def forward(self, x: Tensor) -> Tensor:
+        """Return Tanh activation function."""
+        return torch.tanh(x)
+
+
+class ELU(torch.nn.Module):
+    """Construct an ELU object."""
+
+    def forward(self, x: Tensor) -> Tensor:
+        """Return ELU activation function."""
+        return torch.nn.functional.elu(x)
+
+
+class LeakyReLU(torch.nn.Module):
+    """Construct an LeakyReLU object."""
+
+    def forward(self, x: Tensor) -> Tensor:
+        """Return LeakyReLU activation function."""
+        return torch.nn.functional.leaky_relu(x)
+
+
+class GELU(torch.nn.Module):
+    """Construct an GELU object."""
+
+    def forward(self, x: Tensor) -> Tensor:
+        """Return GELU activation function."""
+        return torch.nn.functional.gelu(x)
+
+
+# Adaptive Piecewise Linear
+class APL(torch.nn.Module):
+    """Construct an APL object."""
+
+    def forward(self, x: Tensor) -> Tensor:
+        """Return APL activation function."""
+        return torch.nn.functional.apl(x)
+
+
 class ScaledEmbedding(nn.Module):
     r"""This is a modified version of nn.Embedding that introduces a learnable scale
     on the parameters.  Note: due to how we initialize it, it's best used with
