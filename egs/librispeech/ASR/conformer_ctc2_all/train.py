@@ -269,7 +269,7 @@ def get_parser():
         "--activation_type",
         type=str,
         default="double_swish",
-        choices=["swish", "double_swish", "relu", "gelu", "tahn", "leaky_relu"],
+        choices=["swish", "double_swish", "relu", "gelu", "tanh", "leaky_relu"],
         help="The type of activation function.",
     )
 
