@@ -41,6 +41,7 @@ class Conv2dSubsampling(torch.nn.Module):
         self,
         in_channels: int,
         out_channels: int,
+        Activation_Func,  # default is DoubleSwish activation for cov2d subsampling
         layer1_channels: int = 8,
         layer2_channels: int = 32,
         layer3_channels: int = 128,
@@ -68,7 +69,7 @@ class Conv2dSubsampling(torch.nn.Module):
                 padding=1,
             ),
             ActivationBalancer(channel_dim=1),
-            DoubleSwish(),
+            Activation_Func(),
             ScaledConv2d(
                 in_channels=layer1_channels,
                 out_channels=layer2_channels,
@@ -76,7 +77,7 @@ class Conv2dSubsampling(torch.nn.Module):
                 stride=2,
             ),
             ActivationBalancer(channel_dim=1),
-            DoubleSwish(),
+            Activation_Func(),
             ScaledConv2d(
                 in_channels=layer2_channels,
                 out_channels=layer3_channels,
@@ -84,7 +85,7 @@ class Conv2dSubsampling(torch.nn.Module):
                 stride=2,
             ),
             ActivationBalancer(channel_dim=1),
-            DoubleSwish(),
+            Activation_Func(),
         )
         self.out = ScaledLinear(
             layer3_channels * (((in_channels - 1) // 2 - 1) // 2), out_channels

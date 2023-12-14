@@ -32,6 +32,8 @@ from scaling import (
     ELU,
     LeakyReLU,
     GELU,
+    Softplus,
+    SELU,
     ScaledConv1d,
     ScaledLinear,
 )
@@ -61,7 +63,6 @@ class Conformer(Transformer):
         self,
         num_features: int,
         num_classes: int,
-        activation_type: str = "double_swish",
         subsampling_factor: int = 4,
         d_model: int = 256,
         nhead: int = 4,
@@ -71,6 +72,8 @@ class Conformer(Transformer):
         dropout: float = 0.1,
         layer_dropout: float = 0.075,
         cnn_module_kernel: int = 31,
+        activation_type: str = "double_swish",
+        all_activation: str = "no",
     ) -> None:
         super(Conformer, self).__init__(
             num_features=num_features,
@@ -83,7 +86,10 @@ class Conformer(Transformer):
             num_decoder_layers=num_decoder_layers,
             dropout=dropout,
             layer_dropout=layer_dropout,
+            activation_type=activation_type,
+            all_activation=all_activation,
         )
+        print("all_activation", all_activation)
 
         self.num_features = num_features
         self.subsampling_factor = subsampling_factor
@@ -95,10 +101,6 @@ class Conformer(Transformer):
         # That is, it does two things simultaneously:
         #   (1) subsampling: T -> T//subsampling_factor
         #   (2) embedding: num_features -> d_model
-        self.encoder_embed = Conv2dSubsampling(num_features, d_model)
-
-        self.encoder_pos = RelPositionalEncoding(d_model, dropout)
-
         if activation_type == "double_swish":
             Activation_Func = DoubleSwish
         elif activation_type == "swish":
@@ -113,6 +115,21 @@ class Conformer(Transformer):
             Activation_Func = LeakyReLU
         elif activation_type == "gelu":
             Activation_Func = GELU
+        elif activation_type == "selu":
+            Activation_Func = SELU
+        elif activation_type == "softplus":
+            Activation_Func = Softplus
+        else:
+            raise ValueError(f"Unknown activation_type: {activation_type}")
+
+        if all_activation == "yes":
+            self.encoder_embed = Conv2dSubsampling(
+                num_features, d_model, Activation_Func
+            )
+        else:
+            self.encoder_embed = Conv2dSubsampling(num_features, d_model, DoubleSwish)
+
+        self.encoder_pos = RelPositionalEncoding(d_model, dropout)
 
         encoder_layer = ConformerEncoderLayer(
             d_model,

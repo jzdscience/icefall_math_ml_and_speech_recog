@@ -269,8 +269,25 @@ def get_parser():
         "--activation_type",
         type=str,
         default="double_swish",
-        choices=["swish", "double_swish", "relu", "gelu", "tanh", "leaky_relu"],
+        choices=[
+            "swish",
+            "double_swish",
+            "relu",
+            "gelu",
+            "tanh",
+            "leaky_relu",
+            "elu",
+            "selu",
+            "softplus",
+        ],
         help="The type of activation function.",
+    )
+
+    parser.add_argument(
+        "--all_activation",
+        type=str,
+        default=False,
+        help="If the all_activation is True, then all the activation function including those in subsampling and decoder will be replaced by the given activation_type. Otherwise it is just encoder",
     )
 
     return parser
@@ -876,6 +893,7 @@ def run(rank, world_size, args):
         num_encoder_layers=params.num_encoder_layers,
         num_decoder_layers=params.num_decoder_layers,
         activation_type=params.activation_type,
+        all_activation=params.all_activation,
     )
 
     print(model)

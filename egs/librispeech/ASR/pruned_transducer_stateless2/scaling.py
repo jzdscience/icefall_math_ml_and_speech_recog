@@ -23,6 +23,7 @@ from typing import Optional, Tuple
 import torch
 import torch.backends.cudnn.rnn as rnn
 import torch.nn as nn
+import torch.nn.functional as F
 from torch import _VF, Tensor
 
 from icefall.utils import is_jit_tracing
@@ -729,12 +730,13 @@ class Tanh(torch.nn.Module):
         return torch.tanh(x)
 
 
-class ELU(torch.nn.Module):
-    """Construct an ELU object."""
+class ELU(nn.Module):
+    def __init__(self, alpha=1.0):
+        super(ELU, self).__init__()
+        self.alpha = alpha
 
-    def forward(self, x: Tensor) -> Tensor:
-        """Return ELU activation function."""
-        return torch.nn.functional.elu(x)
+    def forward(self, x):
+        return F.elu(x, self.alpha)
 
 
 class LeakyReLU(torch.nn.Module):
@@ -753,13 +755,20 @@ class GELU(torch.nn.Module):
         return torch.nn.functional.gelu(x)
 
 
-# Adaptive Piecewise Linear
-class APL(torch.nn.Module):
-    """Construct an APL object."""
+class SELU(torch.nn.Module):
+    """Construct an SELU object."""
 
     def forward(self, x: Tensor) -> Tensor:
-        """Return APL activation function."""
-        return torch.nn.functional.apl(x)
+        """Return SELU activation function."""
+        return torch.nn.functional.selu(x)
+
+
+class Softplus(torch.nn.Module):
+    """Construct an Softplus object."""
+
+    def forward(self, x: Tensor) -> Tensor:
+        """Return Softplus activation function."""
+        return torch.nn.functional.softplus(x)
 
 
 class ScaledEmbedding(nn.Module):

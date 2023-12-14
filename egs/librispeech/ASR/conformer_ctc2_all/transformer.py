@@ -27,6 +27,14 @@ from scaling import (
     ActivationBalancer,
     BasicNorm,
     DoubleSwish,
+    Swish,
+    ReLU,
+    Tanh,
+    ELU,
+    LeakyReLU,
+    GELU,
+    Softplus,
+    SELU,
     ScaledEmbedding,
     ScaledLinear,
 )
@@ -42,6 +50,8 @@ class Transformer(nn.Module):
         self,
         num_features: int,
         num_classes: int,
+        activation_type,
+        all_activation,
         subsampling_factor: int = 4,
         d_model: int = 256,
         nhead: int = 4,
@@ -88,7 +98,33 @@ class Transformer(nn.Module):
         # That is, it does two things simultaneously:
         #   (1) subsampling: T -> T//subsampling_factor
         #   (2) embedding: num_classes -> d_model
-        self.encoder_embed = Conv2dSubsampling(num_features, d_model)
+        print("all_activation", all_activation)
+
+        if all_activation == "yes":
+            if activation_type == "double_swish":
+                Activation_Func = DoubleSwish
+            elif activation_type == "swish":
+                Activation_Func = Swish
+            elif activation_type == "relu":
+                Activation_Func = ReLU
+            elif activation_type == "tanh":
+                Activation_Func = Tanh
+            elif activation_type == "elu":
+                Activation_Func = ELU
+            elif activation_type == "leaky_relu":
+                Activation_Func = LeakyReLU
+            elif activation_type == "gelu":
+                Activation_Func = GELU
+            elif activation_type == "selu":
+                Activation_Func = SELU
+            elif activation_type == "softplus":
+                Activation_Func = Softplus
+            else:
+                raise ValueError(f"Unknown activation_type: {activation_type}")
+        else:
+            Activation_Func = DoubleSwish
+
+        self.encoder_embed = Conv2dSubsampling(num_features, d_model, Activation_Func)
 
         self.encoder_pos = PositionalEncoding(d_model, dropout)
 
@@ -123,6 +159,7 @@ class Transformer(nn.Module):
             decoder_layer = TransformerDecoderLayer(
                 d_model=d_model,
                 nhead=nhead,
+                Activation_Func=Activation_Func,
                 dim_feedforward=dim_feedforward,
                 dropout=dropout,
             )
@@ -412,7 +449,6 @@ class TransformerEncoderLayer(nn.Module):
         self.feed_forward = nn.Sequential(
             ScaledLinear(d_model, dim_feedforward),
             ActivationBalancer(channel_dim=-1),
-            DoubleSwish(),
             nn.Dropout(dropout),
             ScaledLinear(dim_feedforward, d_model, initial_scale=0.25),
         )
@@ -514,6 +550,7 @@ class TransformerDecoderLayer(nn.Module):
         self,
         d_model: int,
         nhead: int,
+        Activation_Func,
         dim_feedforward: int = 2048,
         dropout: float = 0.1,
         layer_dropout: float = 0.075,
@@ -527,7 +564,7 @@ class TransformerDecoderLayer(nn.Module):
         self.feed_forward = nn.Sequential(
             ScaledLinear(d_model, dim_feedforward),
             ActivationBalancer(channel_dim=-1),
-            DoubleSwish(),
+            Activation_Func(),
             nn.Dropout(dropout),
             ScaledLinear(dim_feedforward, d_model, initial_scale=0.25),
         )
