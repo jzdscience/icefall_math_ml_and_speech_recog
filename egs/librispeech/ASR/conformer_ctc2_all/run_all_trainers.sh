@@ -2,7 +2,7 @@
 echo "Run all models for training"
 
 # Define the list of activation types
-activation_types=('tanh' 'softplus' 'relu')
+activation_types=('tanh' 'softplus' 'relu' 'gelu' 'leaky_relu' 'elu' 'selu' 'swish' 'double_swish')
 
 # Get the current date in the format YYYYMMDD
 current_date=$(date +"%Y%m%d")
