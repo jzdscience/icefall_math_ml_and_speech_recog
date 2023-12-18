@@ -93,20 +93,20 @@ WARNING: Do not use pip/conda install cudatoolkit
 
 3.4. Install ffmpeg. conda install -c conda-forge 'ffmpeg<7'
 
-3.5 Instal the rest of packages the *Installation Example* on https://icefall.readthedocs.io/en/latest/installation/index.html#installation-example
+3.5 Install the rest of packages following the *Installation Example* on https://icefall.readthedocs.io/en/latest/installation/index.html#installation-example
 which includes: 
 3.5.1 Torch (2.1.0 for CUDA 12.1) and torchaudio (2.1.0 for CUDA 12.1) at the same time from https://download.pytorch.org/whl/torch_stable.html
     pip install torch==2.1.0+cu121 torchaudio==2.1.0+cu121 -f https://download.pytorch.org/whl/torch_stable.html
 3.5.2 K2 (1.24.4 for CUDA 12.1 and Torch 2.1.0) from https://k2-fsa.github.io/k2/cuda.html
     pip install k2==1.24.4.dev20231123+cuda12.1.torch2.1.0 -f https://k2-fsa.github.io/k2/cuda.html
-3.5.3 Lhotse (newest version)
+3.5.3 Lhotse (version 1.17.0.dev+git.b869488.clean)
 pip install git+https://github.com/lhotse-speech/lhotse
 3.5.4 download Icefall and install the requirements in the repo
     git clone git@github.com:jzdscience/icefall_w4995_mathml.git   # this is my fork from https://github.com/k2-fsa/icefall
     pip install -r ./icefall/requirements.txt
 
-3.6 Fix a compatibility issue in the Pytorch you just installed by
-3.6.1 Open "/torch/nn/modules/transformer.py" in package installation folder with a text editor
+3.6 Fix a compatibility issue in the Pytorch and K2 you just installed:
+3.6.1 Open "/torch/nn/modules/transformer.py" in pytorch package installation folder with a text editor
 3.6.2 Found the forward function with
 tgt_is_causal: Optional[bool] = None,
 memory_is_causal: bool = False
@@ -124,7 +124,8 @@ A. Prepare data
 basically, it will first download voice data, lexicon, lm, etcs into `icefall\egs\librispeech\ASR\download\` ... then prepare and save data to
 `icefall\egs\librispeech\ASR\data\`
 
-WARNING: You do not need to do anything else unless it throw error, which is very likely!
+WARNING1: You do not need to do anything else unless it throw error, which is very likely!
+WARNING2: Even everything is correct, data preparation takes 5-8 hours
 
 B. Training
 1. cd to icefall\egs\librispeech\ASR\conformer_ctc2_all
@@ -133,7 +134,7 @@ B. Training
 WARNING: 
 2.1 It take ~32min*30 epoch* 9 models = 144hrs to finish on a VM with 4 Tesla T4 GPU
 2.2 You can reduce the max-duration is your vRAM is lower than 16GB, otherwise it is not enough.
-2.3 Alternatively, you can call individual training 
+2.3 Alternatively, you can call any individual training by
 python train.py \
         --exp-dir exp/leaky_relu \  # this is where to save the result
         --start-epoch 1 \ # if you have a checkpoint saved after epoch,say 30, then you can start from 31 to train
@@ -169,7 +170,7 @@ Example:
 Apologize that you need to run individual experiement and change epoch argument manually to the best validation loss epoch obtained from C. Analysis 1, 
 `run_all_decoders.sh` does not support a variable epoch argument yet...
 
-The results of WER will be saved as `wer.summary.clean.txt` `wer.summary.other.txt` in individual run folder, for example,  `\exp\leaky_relu\`
+The results of WER will be saved as `wer.summary.clean.txt` `wer.summary.other.txt` in individual run folder, for example,  `/exp/leaky_relu/`
 
 WARNING: `wer.summary.clean.txt` `wer.summary.other.txt` will be overwritten, if you run the decoding process again for the same model. It does not have a renaming mechanism yet.
 
