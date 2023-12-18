@@ -1,4 +1,5 @@
 #!/bin/bash
+### jz3702
 echo "Running all models for decoding to get WERs"
 
 # Change to the directory where the subdirectories are located

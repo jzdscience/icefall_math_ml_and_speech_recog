@@ -101,6 +101,8 @@ class Conformer(Transformer):
         # That is, it does two things simultaneously:
         #   (1) subsampling: T -> T//subsampling_factor
         #   (2) embedding: num_features -> d_model
+
+        ### jz3702 ############################
         if activation_type == "double_swish":
             Activation_Func = DoubleSwish
         elif activation_type == "swish":
@@ -128,6 +130,7 @@ class Conformer(Transformer):
             )
         else:
             self.encoder_embed = Conv2dSubsampling(num_features, d_model, DoubleSwish)
+        ####################### jz3702
 
         self.encoder_pos = RelPositionalEncoding(d_model, dropout)
 
@@ -210,7 +213,7 @@ class ConformerEncoderLayer(nn.Module):
         self,
         d_model: int,
         nhead: int,
-        Activation_Func,
+        Activation_Func, #jz3702
         dim_feedforward: int = 2048,
         dropout: float = 0.1,
         layer_dropout: float = 0.075,
@@ -227,7 +230,7 @@ class ConformerEncoderLayer(nn.Module):
         self.feed_forward = nn.Sequential(
             ScaledLinear(d_model, dim_feedforward),
             ActivationBalancer(channel_dim=-1),
-            Activation_Func(),
+            Activation_Func(), #jz3702
             nn.Dropout(dropout),
             ScaledLinear(dim_feedforward, d_model, initial_scale=0.25),
         )
@@ -235,13 +238,13 @@ class ConformerEncoderLayer(nn.Module):
         self.feed_forward_macaron = nn.Sequential(
             ScaledLinear(d_model, dim_feedforward),
             ActivationBalancer(channel_dim=-1),
-            Activation_Func(),
+            Activation_Func(),#jz3702
             nn.Dropout(dropout),
             ScaledLinear(dim_feedforward, d_model, initial_scale=0.25),
         )
 
         self.conv_module = ConvolutionModule(
-            d_model, cnn_module_kernel, Activation_Func
+            d_model, cnn_module_kernel, Activation_Func 
         )
 
         self.norm_final = BasicNorm(d_model)
@@ -928,7 +931,7 @@ class ConvolutionModule(nn.Module):
             channel_dim=1, min_positive=0.05, max_positive=1.0
         )
 
-        self.activation = Activation_Func()
+        self.activation = Activation_Func() #jz3702
 
         self.pointwise_conv2 = ScaledConv1d(
             channels,

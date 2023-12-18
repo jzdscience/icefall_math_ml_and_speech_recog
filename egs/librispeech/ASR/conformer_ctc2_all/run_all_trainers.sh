@@ -1,4 +1,5 @@
 #!/bin/bash
+### jz3702
 echo "Run all models for training"
 
 # Define the list of activation types

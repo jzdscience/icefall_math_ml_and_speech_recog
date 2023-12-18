@@ -98,8 +98,10 @@ class Transformer(nn.Module):
         # That is, it does two things simultaneously:
         #   (1) subsampling: T -> T//subsampling_factor
         #   (2) embedding: num_classes -> d_model
+        
+        # jz3702###################################################
         print("all_activation", all_activation)
-
+        
         if all_activation == "yes":
             if activation_type == "double_swish":
                 Activation_Func = DoubleSwish
@@ -123,6 +125,7 @@ class Transformer(nn.Module):
                 raise ValueError(f"Unknown activation_type: {activation_type}")
         else:
             Activation_Func = DoubleSwish
+        # jz3702###################################################
 
         self.encoder_embed = Conv2dSubsampling(num_features, d_model, Activation_Func)
 
@@ -159,7 +162,7 @@ class Transformer(nn.Module):
             decoder_layer = TransformerDecoderLayer(
                 d_model=d_model,
                 nhead=nhead,
-                Activation_Func=Activation_Func,
+                Activation_Func=Activation_Func, # jz3702
                 dim_feedforward=dim_feedforward,
                 dropout=dropout,
             )
@@ -550,7 +553,7 @@ class TransformerDecoderLayer(nn.Module):
         self,
         d_model: int,
         nhead: int,
-        Activation_Func,
+        Activation_Func, # jz3702
         dim_feedforward: int = 2048,
         dropout: float = 0.1,
         layer_dropout: float = 0.075,
@@ -564,7 +567,7 @@ class TransformerDecoderLayer(nn.Module):
         self.feed_forward = nn.Sequential(
             ScaledLinear(d_model, dim_feedforward),
             ActivationBalancer(channel_dim=-1),
-            Activation_Func(),
+            Activation_Func(), # jz3702
             nn.Dropout(dropout),
             ScaledLinear(dim_feedforward, d_model, initial_scale=0.25),
         )

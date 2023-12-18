@@ -704,7 +704,7 @@ class DoubleSwish(torch.nn.Module):
         else:
             return DoubleSwishFunction.apply(x)
 
-
+##################jz3702#################################################
 ## below are all different activation functions to experiement with
 class Swish(torch.nn.Module):
     """Construct an Swish object."""
@@ -769,7 +769,7 @@ class Softplus(torch.nn.Module):
     def forward(self, x: Tensor) -> Tensor:
         """Return Softplus activation function."""
         return torch.nn.functional.softplus(x)
-
+##################jz3702#################################################
 
 class ScaledEmbedding(nn.Module):
     r"""This is a modified version of nn.Embedding that introduces a learnable scale
