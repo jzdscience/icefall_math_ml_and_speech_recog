@@ -74,11 +74,13 @@ class Tokenizer(object):
             if intersperse_blank:
                 token_ids = intersperse(token_ids, self.blank_id)
 
-                token_ids_list.append(token_ids)
+            token_ids_list.append(token_ids)
 
         return token_ids_list
 
-    def tokens_to_token_ids(self, tokens_list: List[str], intersperse_blank: bool = True):
+    def tokens_to_token_ids(
+        self, tokens_list: List[str], intersperse_blank: bool = True
+    ):
         """
         Args:
           tokens_list:
@@ -101,6 +103,7 @@ class Tokenizer(object):
 
             if intersperse_blank:
                 token_ids = intersperse(token_ids, self.blank_id)
-                token_ids_list.append(token_ids)
+
+            token_ids_list.append(token_ids)
 
         return token_ids_list
